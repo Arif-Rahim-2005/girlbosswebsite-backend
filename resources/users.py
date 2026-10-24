@@ -114,6 +114,8 @@ class UserResource(Resource):
     def get(self, user_id=None):
         current_user_id = get_jwt_identity()
         current_user = User.query.get(current_user_id)
+        print("Logged-in user ID:", current_user_id)
+        print("Logged-in user role:", current_user.role if current_user else None)
 
         if not current_user:
             return {"message": "Invalid user"}, 404
