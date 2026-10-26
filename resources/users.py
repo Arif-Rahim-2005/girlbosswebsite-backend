@@ -37,6 +37,7 @@ class LogInResource(Resource):
                     "id": user.id,
                     "username": user.username,
                     "email": user.email,
+                    "role": user.role,
                 },
             }, 200
         else:
@@ -221,11 +222,21 @@ class UserResource(Resource):
 
 class AdminResource(Resource):
     @jwt_required()
-    def get(self):
-        user_id = get_jwt_identity()
+    def get(self, user_id):
+        current_user_id = get_jwt_identity()
+        current_user = User.query.get(current_user_id)
+        if not current_user:
+            return {"message": "You cannot view other users"}, 404
+
+
+        current_user_role = current_user.role
+
+        if current_user_role != "admin":
+            return{"message":"Access denied"}
+
+        
         user = User.query.get(user_id)
-        if not user:
-            return {"message": "User not found"}, 404
+
 
         return {
             "id": user.id,

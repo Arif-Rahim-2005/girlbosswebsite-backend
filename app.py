@@ -62,7 +62,7 @@ def home():
 api.add_resource(SignupResource, "/signup")
 api.add_resource(LogInResource, "/login")
 api.add_resource(UserResource, "/users", "/users/<int:user_id>")
-api.add_resource(AdminResource, "/me")
+api.add_resource(AdminResource, "/admin")
 
 api.add_resource(ProductsResource, "/products")
 api.add_resource(ProductResource, "/products/<int:product_id>")
