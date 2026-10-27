@@ -74,6 +74,7 @@ def product_to_dict(product):
             product.updated_at.isoformat()
             if product.updated_at else None
         ),
+        "is_featured": product.is_featured,
     }
 
 
@@ -116,6 +117,13 @@ class ProductsResource(Resource):
         default="Available",
         location="form"
     )
+    parser.add_argument(
+        "is_featured",
+        type=str,
+        required=False,
+        default=False,
+        location="form"
+    )
 
     def get(self):
         products = Product.query.order_by(Product.created_at.desc()).all()
@@ -141,6 +149,7 @@ class ProductsResource(Resource):
         description = data["product_description"].strip()
         packaging = data["packaging"].strip()
         availability = (data.get("availability") or "Available").strip()
+        is_featured = data["is_featured"]
 
         if not all([product_name, description, packaging, availability]):
             return {"message": "Product fields cannot be empty."}, 400
@@ -173,6 +182,7 @@ class ProductsResource(Resource):
                 packaging=packaging,
                 price_per_pack=price,
                 availability=availability,
+                is_featured=is_featured,
             )
 
             db.session.add(product)
@@ -495,6 +505,16 @@ class ProductResource(Resource):
 
                 product.availability = availability
 
+            if "is_featured" in data:
+                featured_value = data["is_featured"].strip().lower()
+
+                if featured_value not in ("true", "false", "1", "0"):
+                    return {"message": "Invalid featured-product value."}, 400
+
+                is_featured = featured_value in ("true", "1")
+
+                product.is_featured = is_featured
+                
             db.session.commit()
 
             return {

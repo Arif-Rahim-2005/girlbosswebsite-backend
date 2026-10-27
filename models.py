@@ -58,7 +58,12 @@ class Product(db.Model):
         default=datetime.utcnow,
         onupdate=datetime.utcnow
     )
-
+    is_featured = db.Column(
+        db.Boolean,
+        nullable=False,
+        default=False,
+        server_default=db.false()
+    )
     images = db.relationship(
         "ProductImage",
         back_populates="product",
