@@ -121,7 +121,7 @@ class ProductsResource(Resource):
         "is_featured",
         type=str,
         required=False,
-        default=False,
+        default="false",
         location="form"
     )
 
@@ -149,7 +149,12 @@ class ProductsResource(Resource):
         description = data["product_description"].strip()
         packaging = data["packaging"].strip()
         availability = (data.get("availability") or "Available").strip()
-        is_featured = data["is_featured"]
+        featured_value = str(data.get("is_featured", "false")).strip().lower()
+
+        if featured_value not in ("true", "false", "1", "0"):
+            return {"message": "Invalid featured-product value."}, 400
+
+        is_featured = featured_value in ("true", "1")
 
         if not all([product_name, description, packaging, availability]):
             return {"message": "Product fields cannot be empty."}, 400
